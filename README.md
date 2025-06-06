@@ -29,6 +29,6 @@ tbDelete       --dbId <*dbId*> --tbId <*tbId*>
 data/row commands
 insert       --dbId <*dbId*> --tbId <*tbId*> --data <*data*>
 select       --dbId <*dbId*> --tbId <*tbId*>
-rwdelete     --dbId <*dbId*> --tbId <*tbId*> --rwId <*rwId*>
+rwDelete     --dbId <*dbId*> --tbId <*tbId*> --rwId <*rwId*>
 
 ```
