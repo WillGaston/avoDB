@@ -10,9 +10,9 @@ def db():
 
 @click.command(help="--name <*name*>")
 @click.option('--name', prompt=True, help="name of database being created")
-def dbCreate(dbName):
+def dbCreate(name):
   print('blah')
-  print(dbName)
+  print(name)
 
 @click.command(help="")
 def dbList():
