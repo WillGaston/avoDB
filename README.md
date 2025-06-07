@@ -25,6 +25,7 @@ table commands:
 tbCreate       --dbId <*dbId*> --tbname <*name*> --schema <*schema*>
 tbList         --dbId <*dbId*>
 tbDelete       --dbId <*dbId*> --tbId <*tbId*> 
+tbSchema       --dbId <*dbId*> --tbId <*tbId*> 
 
 data/row commands
 insert       --dbId <*dbId*> --tbId <*tbId*> --data <*data*>
