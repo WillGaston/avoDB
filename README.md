@@ -12,20 +12,20 @@ A small, end-to-end encrypted database as a service (DBaaS) with a focus on secu
 ---------------------------------------------------------
 
 user commands:
-register       --username <*username*>
-login          --username <*username*>
+register       --username <*username*> --password <*password*>
+login          --username <*username*> --password <*password*>
 logout  
 
 database commands:
-dbCreate       --databaseName <*dbName*>
+dbCreate       --name <*name*>
 dbList
 dbDelete       --dbId <*dbId*>
 
 table commands:
-tbCreate       --dbId <*dbId*> --tbname <*name*> --schema <*schema*>
+tbCreate       --dbId <*dbId*> --name <*name*> --schema <*schema*>
 tbList         --dbId <*dbId*>
+tbSchema       --dbId <*dbId*> --tbId <*tbId*>
 tbDelete       --dbId <*dbId*> --tbId <*tbId*> 
-tbSchema       --dbId <*dbId*> --tbId <*tbId*> 
 
 data/row commands
 insert       --dbId <*dbId*> --tbId <*tbId*> --data <*data*>
