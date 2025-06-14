@@ -3,12 +3,15 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
+
+from client.cryptography.kdf import derivePasswordKey
 
 def serialiseKeyPair(publicKey, privateKey, password):
   privateSerialisedKey = privateKey.private_bytes(
     encoding = serialization.Encoding.PEM,
     format = serialization.PrivateFormat.PKCS8,
-    encryption_algorithm = serialization.BestAvailableEncryption(password.decode())
+    encryption_algorithm = serialization.BestAvailableEncryption(password.encode())
   )
 
   publicSerialisedKey = publicKey.public_bytes(
@@ -31,6 +34,26 @@ def deserializeKeyPair(publicSerialisedKey, privateSerialisedKey, password):
   )
 
   return publicKey, privateKey
+
+def encryptPrivateKey(privateKey, password, salt, iv):
+  key = derivePasswordKey(password, salt)
+  cipherInstance = createCipherInstance(iv, key)
+  encryptor = cipherInstance.encryptor()
+  paddingObject = padding.PKCS7(128).padder()
+  paddedPK = paddingObject.update(privateKey) + paddingObject.finalize()
+  encryptedPrivateKey = encryptor.update(paddedPK) + encryptor.finalize()
+
+  return encryptedPrivateKey
+
+def decryptPrivateKey(encryptedPrivateKey, password, salt, iv):
+  key = derivePasswordKey(password, salt)
+  cipherInstance = createCipherInstance(iv, key)
+  decryptor = cipherInstance.decryptor()
+  decryptedPrivateKey = decryptor.update(unpaddedPK) + decryptor.finalize()
+  unpaddingObject = padding.PKCS7(128).padder()
+  unpaddedPK = unpaddingObject.update(decryptedPrivateKey) + unpaddingObject.finalize()
+
+  return unpaddedPK 
 
 def encryptMasterKey(masterKey, publicKey):
   encryptedMasterKey = publicKey.encrypt(
