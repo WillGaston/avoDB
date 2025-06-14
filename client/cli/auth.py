@@ -1,5 +1,7 @@
 import click
 
+from api.routes.auth import *
+
 @click.group()
 def auth():
   pass
@@ -8,9 +10,8 @@ def auth():
 @click.option('--username', prompt=True, help="your username")
 @click.option('--password', prompt=True, hide_input=True, help="your password")
 def login(username, password):
+  #loginFunc(username, password)
   print('blah')
-  print(username)
-  print(password)
 
 @click.command(help="--username <*username*> --password <*password*>")
 @click.option('--username', prompt=True, help="your username")
@@ -19,6 +20,7 @@ def register(username, password):
   print('blah')
   print(username)
   print(password)
+  registerFunc(username, password)
 
 @click.command(help="")
 def logout():

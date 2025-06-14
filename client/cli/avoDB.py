@@ -1,6 +1,6 @@
 import click
-from auth import *
-from tables import *
+from client.cli.auth import *
+from client.cli.tables import *
 
 avoDB_banner = r"""
 avoDB: an end-to-end encrypted database as a service.
@@ -14,6 +14,3 @@ avoDB_CLI.add_command(auth)
 avoDB_CLI.add_command(db)
 avoDB_CLI.add_command(tb)
 avoDB_CLI.add_command(rw)
-
-if __name__ == '__main__':
-  avoDB_CLI()
