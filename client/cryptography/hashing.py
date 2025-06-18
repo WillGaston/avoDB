@@ -7,4 +7,8 @@ def hashPassword(password):
   return hashedPassword
 
 def verifyPassword(hashedPassword, password):
-  return hasher.verify(hashedPassword, password)
+  try:
+    hasher.verify(hashedPassword, password.encode())
+    return True
+  except Exception:
+    return False
