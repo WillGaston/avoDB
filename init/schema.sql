@@ -14,6 +14,7 @@ create table if not exists UsersMeta (
 create table if not exists Databases (
   db_id                 UUID primary key,
   owner_id              UUID not null references UsersMeta(user_id) on delete cascade,
+  iv                    text not null,
   encrypted_db_name     text not null,
   encrypted_master_key  text not null
 );
