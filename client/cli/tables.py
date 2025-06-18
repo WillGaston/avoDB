@@ -1,5 +1,7 @@
 import click
 
+from api.routes.tables import *
+
 #----------------------------------------------#
 #           Database Commands                  #
 #----------------------------------------------#
@@ -11,12 +13,11 @@ def db():
 @click.command(help="--name <*name*>")
 @click.option('--name', prompt=True, help="name of database being created")
 def dbCreate(name):
-  print('blah')
-  print(name)
+  createDB(name)
 
 @click.command(help="")
 def dbList():
-  print('blah')
+  listDB()
 
 @click.command(help="--dbId <*dbId*>")
 @click.option('--dbID', prompt=True, help="id of the database being deleted")
