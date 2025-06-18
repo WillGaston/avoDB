@@ -1,0 +1,74 @@
+import os
+import keyring
+import sys
+from keyrings.alt.file import PlaintextKeyring
+
+servicePrK = "avoDB_privateKey"
+servicePbK = "avoDB_publicKey"
+serviceP = "avoDB_password"
+serviceU = "avoDB_userID"
+serviceIV = "avoDB_iv"
+
+username = "avoDB_username"
+keyring.set_keyring(PlaintextKeyring()) # not secure, just for development/testing
+
+def setCredentials(userId, privateKey, publicKey, password, iv):
+  keyring.set_password(servicePrK, username, privateKey.decode())
+  keyring.set_password(servicePbK, username, publicKey.decode())
+  keyring.set_password(serviceP, username, password)
+  keyring.set_password(serviceU, username, userId)
+  keyring.set_password(serviceIV, username, iv)
+  print('successfully added credentials to keyring')
+
+def getPrivateKey():
+  secret = keyring.get_password(servicePrK, username)
+  if secret is None:
+    print("not logged in, please log in first")
+    sys.exit(1)
+
+  return secret.encode()
+
+def getPublicKey():
+  secret = keyring.get_password(servicePbK, username)
+  if secret is None:
+    print("not logged in, please log in first")
+    sys.exit(1)
+
+  return secret.encode()
+
+def getPassword():
+  secret = keyring.get_password(serviceP, username)
+  if secret is None:
+    print("not logged in, please log in first")
+    sys.exit(1)
+
+  return secret.encode()
+
+def getIV():
+  secret = keyring.get_password(serviceIV, username)
+  if secret is None:
+    print("not logged in, please log in first")
+    sys.exit(1)
+
+  return secret
+
+def getUserID():
+  secret = keyring.get_password(serviceU, username)
+  if secret is None:
+    print("not logged in, please log in first")
+    sys.exit(1)
+
+  return secret
+
+def checkIfLoggedIn():
+  secret = keyring.get_password(serviceP, username)
+  if secret is not None:
+    print('Already logged in')
+    sys.exit(1)
+
+def removeCredentials():
+  keyring.delete_password(servicePrK, username)
+  keyring.delete_password(servicePbK, username)
+  keyring.delete_password(serviceP, username)
+  keyring.delete_password(serviceU, username)
+  keyring.delete_password(serviceIV, username)
