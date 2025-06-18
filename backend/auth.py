@@ -24,7 +24,18 @@ def addUserToDB(userId, username, hashedPassword, kek_salt, pk_iv, encryptedPriv
   return True
 
 def getHashedPassword(userId):
-  qry = "select hashed_password from Users where userId = %s"
+  qry = "select hashed_password from UsersMeta where user_id = %s"
+  cursor, connection = cursorCreation()
+
+  cursor.execute(qry, [userId])
+  result = cursor.fetchall()
+
+  cursorRemoval(cursor, connection)
+  # error checking
+  return result[0][0]
+
+def getUserData(userId):
+  qry = "select encrypted_private_key, public_key, kek_salt, pk_iv from UsersMeta where user_id = %s"
   cursor, connection = cursorCreation()
 
   cursor.execute(qry, [userId])
@@ -33,4 +44,3 @@ def getHashedPassword(userId):
   cursorRemoval(cursor, connection)
   # error checking
   return result[0]
-
