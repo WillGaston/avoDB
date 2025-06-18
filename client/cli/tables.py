@@ -21,9 +21,8 @@ def dbList():
 
 @click.command(help="--dbId <*dbId*>")
 @click.option('--dbID', prompt=True, help="id of the database being deleted")
-def dbDelete(dbId):
-  print('blah')
-  print(dbId)
+def dbDelete(dbid):
+  deleteDBR(dbid)
 
 db.add_command(dbCreate)
 db.add_command(dbList)

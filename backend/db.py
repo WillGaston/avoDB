@@ -19,7 +19,8 @@ def addDB(dbId, ownerId, iv, encryptedDBName, encryptedMasterKey):
   cursorRemoval(cursor, connection)
   
   if value is None:
-    return False
+    print('failed to add db')
+    sys.exit(1)
 
   print('Successfully added database')
   return True
@@ -39,9 +40,26 @@ def listDBs(ownerId):
   cursorRemoval(cursor, connection)
   
   if value is None:
-    return False
+    print('list failed')
+    sys.exit(1)
 
   return value
+
+def deleteDB(ownerId, dbId):
+  qry = "delete from Databases where owner_id = %s and db_id = %s"
+  cursor, connection = cursorCreation()
+
+  try:
+    cursor.execute(qry, [ownerId, dbId])
+    connection.commit()
+  except Exception as e:
+    connection.rollback()
+    print('deletion failed:', e)
+
+  cursorRemoval(cursor, connection)
+
+  print('Successfully deleted db')
+  return True
 
 """ def getDBId(ownerId, encryptedDBName):
   qry = "select dbId from Databases where owner_id = %s and encrypted_db_name = %s"

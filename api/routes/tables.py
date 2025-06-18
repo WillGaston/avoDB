@@ -1,7 +1,7 @@
 from tabulate import tabulate
 import base64
 
-from backend.db import addDB, listDBs
+from backend.db import addDB, deleteDB, listDBs
 from client.cryptography.encryption import decryptMessage, decryptWithPrivateKey, encryptMessage, encryptWithPublicKey
 from client.cryptography.keyGeneration import generateIV, generateMasterKey, generateUserId
 from client.storage.sessionManagement import *
@@ -53,6 +53,6 @@ def listDB():
 
   print(tabulate(dbDecrypted, headers=["DB_id", "dbName"]))
 
-
-def removeDB():
-  print('blah')  
+def deleteDBR(dbId):
+  userId = getUserID()
+  deleteDB(userId, dbId)
