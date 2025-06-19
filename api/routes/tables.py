@@ -1,8 +1,10 @@
 from tabulate import tabulate
 import base64
 
-from backend.db import addDB, deleteDB, listDBs
-from client.cryptography.encryption import decryptMessage, decryptWithPrivateKey, encryptMessage, encryptWithPublicKey
+from backend.auth import checkDBBelongsToUser
+from backend.db import *
+from backend.tables import *
+from client.cryptography.encryption import decryptMessage, decryptPrivateKey, decryptWithPrivateKey, encryptMessage, encryptWithPublicKey
 from client.cryptography.keyGeneration import generateIV, generateMasterKey, generateUserId
 from client.storage.sessionManagement import *
 
@@ -35,7 +37,6 @@ def createDB(dbName):
     # error
     print('did not add db')
 
-
 def listDB():
   userId = getUserID()
   privateKey = getPrivateKey()
@@ -56,3 +57,63 @@ def listDB():
 def deleteDBR(dbId):
   userId = getUserID()
   deleteDB(userId, dbId)
+
+def createTableRoute(dbId, tbName, schema):
+  if not checkDBBelongsToUser(getUserID(), dbId):
+    print('Database does not belong to you. Please choose another')
+    sys.exit(1)
+
+  print(dbId)
+
+  encryptedMasterKey = base64.b64decode(getMasterKey(dbId))
+  masterKey = decryptWithPrivateKey(getPrivateKey(), encryptedMasterKey, getPassword())
+
+  encryptedTableName = encryptMessage(tbName, getIV(), masterKey)
+  encryptedSchema = encryptMessage(schema, getIV(), masterKey)
+
+  addTable(generateUserId(), dbId, encryptedTableName, encryptedSchema)
+
+def deleteTableRoute(dbId, tbId):
+  if not checkDBBelongsToUser(getUserID(), dbId):
+    print('Database does not belong to you. Please choose another')
+    sys.exit(1)
+
+  deleteTable(dbId, tbId)
+
+def listTablesRoute(dbId):
+  if not checkDBBelongsToUser(getUserID(), dbId):
+    print('Database does not belong to you. Please choose another')
+    sys.exit(1)
+
+  userId = getUserID()
+  privateKey = getPrivateKey()
+  iv = getIV()
+  password = getPassword()
+
+  encryptedMasterKey = base64.b64decode(getMasterKey(dbId))
+  masterKey = decryptWithPrivateKey(privateKey, encryptedMasterKey, password)
+
+  tables = listTables(dbId)
+
+  tablesDecrypted = []
+
+  # print(tables)
+
+  for item in tables:
+    tbname = decryptMessage(item[1], iv, masterKey)
+    schema = decryptMessage(item[2], iv, masterKey)
+    tablesDecrypted.append([item[0], base64.b64encode(tbname), base64.b64encode(schema)])
+
+  print(tabulate(tablesDecrypted, headers=["tableId", "tableName", "tableSchema"]))
+
+def getSchemaRoute(dbId, tbId):
+  if not checkDBBelongsToUser(getUserID(), dbId):
+    print('Database does not belong to you. Please choose another')
+    sys.exit(1)
+
+  encryptedMasterKey = base64.b64decode(getMasterKey(dbId))
+  masterKey = decryptWithPrivateKey(getPrivateKey(), encryptedMasterKey, getPassword())
+
+  encryptedSchema = getSchema(tbId, dbId)
+
+  print(base64.b64encode(decryptMessage(encryptedSchema, getIV(), masterKey)))

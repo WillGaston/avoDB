@@ -40,33 +40,25 @@ def tb():
 @click.option('--dbId', prompt=True, help="id of database table will belong to")
 @click.option('--name', prompt=True, help="name of table being created")
 @click.option('--schema', prompt=True, help="name of table being created")
-def tbCreate(dbId, name, schema):
-  print('blah')
-  print(dbId)
-  print(name)
-  print(schema)
+def tbCreate(dbid, name, schema):
+  createTableRoute(dbid, name, schema)
 
 @click.command(help="--dbId <*dbId*>")
 @click.option('--dbId', prompt=True, help="id of database")
-def tbList(dbId):
-  print('blah')
-  print(dbId)
+def tbList(dbid):
+  listTablesRoute(dbid)
 
 @click.command(help="--dbId <*dbId*> --tbId <*tbId*>")
 @click.option('--dbId', prompt=True, help="id of database")
 @click.option('--tbId', prompt=True, help="id of table")
-def tbSchema(dbId, tbId):
-  print('blah')
-  print(dbId)
-  print(tbId)
+def tbSchema(dbid, tbid):
+  getSchemaRoute(dbid, tbid)
 
 @click.command(help="--dbId <*dbId*> --tbId <*tbId*> ")
 @click.option('--dbId', prompt=True, help="id of database")
 @click.option('--tbId', prompt=True, help="id of table")
-def tbDelete(dbId, tbId):
-  print('blah')
-  print(dbId)
-  print(tbId)
+def tbDelete(dbid, tbid):
+  deleteTableRoute(dbid, tbid)
 
 tb.add_command(tbCreate)
 tb.add_command(tbList)

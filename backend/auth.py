@@ -44,3 +44,16 @@ def getUserData(userId):
   cursorRemoval(cursor, connection)
   # error checking
   return result[0]
+
+def checkDBBelongsToUser(userId, dbId):
+  qry = "select count(*) from Databases where owner_id = %s and db_id = %s"
+  cursor, connection = cursorCreation()
+
+  cursor.execute(qry, [userId, dbId])
+  value = cursor.fetchone()
+  cursorRemoval(cursor, connection)
+  
+  if value is None:
+    return False
+
+  return True

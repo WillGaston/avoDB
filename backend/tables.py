@@ -4,37 +4,37 @@ import sys
 
 from backend.dbInit import cursorCreation, cursorRemoval
 
-def addDB(dbId, ownerId, iv, encryptedDBName, encryptedMasterKey):
-  qry = "insert into Databases(db_id, owner_id, iv, encrypted_db_name, encrypted_master_key) values(%s, %s, %s, %s, %s) returning owner_id"
+def addTable(tableId, dbId, tbName, schema):
+  qry = "insert into Tables(table_id, db_id, encrypted_table_name, encrypted_schema) values(%s, %s, %s, %s) returning db_id"
   cursor, connection = cursorCreation()
 
   try:
-    cursor.execute(qry, [dbId, ownerId, iv, encryptedDBName, encryptedMasterKey])
+    cursor.execute(qry, [tableId, dbId, tbName, schema])
     connection.commit()
   except Exception as e:
     connection.rollback()
-    print('Database Insertion Failed: ', e)
+    print('Table Creation Failed: ', e)
 
   value = cursor.fetchone()
   cursorRemoval(cursor, connection)
   
   if value is None:
-    print('failed to add db')
+    print('failed to add table')
     sys.exit(1)
 
-  print('Successfully added database')
+  print('Successfully added table')
   return True
 
-def listDBs(ownerId):
-  qry = "select db_id, encrypted_db_name, encrypted_master_key from Databases where owner_id = %s"
+def listTables(dbId):
+  qry = "select table_id, encrypted_table_name, encrypted_schema from Tables where db_id = %s"
   cursor, connection = cursorCreation()
 
   try:
-    cursor.execute(qry, [ownerId])
+    cursor.execute(qry, [dbId])
     connection.commit()
   except Exception as e:
     connection.rollback()
-    print('list DB failed: ', e)
+    print('list Tables failed: ', e)
 
   value = cursor.fetchall()
   cursorRemoval(cursor, connection)
@@ -45,12 +45,12 @@ def listDBs(ownerId):
 
   return value
 
-def deleteDB(ownerId, dbId):
-  qry = "delete from Databases where owner_id = %s and db_id = %s"
+def deleteTable(dbId, tbId):
+  qry = "delete from Tables where db_id = %s and table_id = %s"
   cursor, connection = cursorCreation()
 
   try:
-    cursor.execute(qry, [ownerId, dbId])
+    cursor.execute(qry, [dbId, tbId])
     connection.commit()
   except Exception as e:
     connection.rollback()
@@ -58,25 +58,25 @@ def deleteDB(ownerId, dbId):
 
   cursorRemoval(cursor, connection)
 
-  print('Successfully deleted db')
+  print('Successfully deleted table')
   return True
 
-def getMasterKey(dbId):
-  qry = "select encrypted_master_key from Databases where db_id = %s"
+def getSchema(tbId, dbId):
+  qry = "select encrypted_schema from Tables where db_id = %s and table_id = %s"
   cursor, connection = cursorCreation()
 
   try:
-    cursor.execute(qry, [dbId])
+    cursor.execute(qry, [dbId, tbId])
     connection.commit()
   except Exception as e:
     connection.rollback()
-    print('failed to get db master key: ', e)
+    print('list schema failed: ', e)
 
   value = cursor.fetchone()
   cursorRemoval(cursor, connection)
   
   if value is None:
-    print('list failed')
+    print('schema failed')
     sys.exit(1)
 
   return value[0]
