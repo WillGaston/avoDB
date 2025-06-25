@@ -38,7 +38,7 @@ def listTables(dbId):
 
   value = cursor.fetchall()
   cursorRemoval(cursor, connection)
-  
+
   if value is None:
     print('list failed')
     sys.exit(1)
@@ -77,6 +77,26 @@ def getSchema(tbId, dbId):
   
   if value is None:
     print('schema failed')
+    sys.exit(1)
+
+  return value[0]
+
+def getTableName(dbId, tbId):
+  qry = "select encrypted_table_name from Tables where db_id = %s and table_id = %s"
+  cursor, connection = cursorCreation()
+
+  try:
+    cursor.execute(qry, [dbId, tbId])
+    connection.commit()
+  except Exception as e:
+    connection.rollback()
+    print('couldn\'t retrieve table name ', e)
+
+  value = cursor.fetchone()
+  cursorRemoval(cursor, connection)
+  
+  if value is None:
+    print('name retrieval failed')
     sys.exit(1)
 
   return value[0]

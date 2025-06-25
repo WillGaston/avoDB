@@ -1,8 +1,9 @@
 from tabulate import tabulate
 import base64
 
-from backend.auth import checkDBBelongsToUser
+from backend.auth import checkDBBelongsToUser, checkRowBelongsToUser, checkTBBelongsToUser
 from backend.db import *
+from backend.rows import deleteRow, insertRow, listRows, selectRows
 from backend.tables import *
 from client.cryptography.encryption import decryptMessage, decryptPrivateKey, decryptWithPrivateKey, encryptMessage, encryptWithPublicKey
 from client.cryptography.keyGeneration import generateIV, generateMasterKey, generateUserId
@@ -50,7 +51,7 @@ def listDB():
   for item in DBs:
     masterKey = decryptWithPrivateKey(privateKey, base64.b64decode(item[2]), password)
     dbname = decryptMessage(item[1], iv, masterKey)
-    dbDecrypted.append([item[0], base64.b64encode(dbname)])
+    dbDecrypted.append([item[0], dbname])
 
   print(tabulate(dbDecrypted, headers=["DB_id", "dbName"]))
 
@@ -62,8 +63,6 @@ def createTableRoute(dbId, tbName, schema):
   if not checkDBBelongsToUser(getUserID(), dbId):
     print('Database does not belong to you. Please choose another')
     sys.exit(1)
-
-  print(dbId)
 
   encryptedMasterKey = base64.b64decode(getMasterKey(dbId))
   masterKey = decryptWithPrivateKey(getPrivateKey(), encryptedMasterKey, getPassword())
@@ -85,7 +84,6 @@ def listTablesRoute(dbId):
     print('Database does not belong to you. Please choose another')
     sys.exit(1)
 
-  userId = getUserID()
   privateKey = getPrivateKey()
   iv = getIV()
   password = getPassword()
@@ -97,23 +95,135 @@ def listTablesRoute(dbId):
 
   tablesDecrypted = []
 
-  # print(tables)
-
   for item in tables:
     tbname = decryptMessage(item[1], iv, masterKey)
     schema = decryptMessage(item[2], iv, masterKey)
-    tablesDecrypted.append([item[0], base64.b64encode(tbname), base64.b64encode(schema)])
+    tablesDecrypted.append([item[0], tbname, schema])
 
   print(tabulate(tablesDecrypted, headers=["tableId", "tableName", "tableSchema"]))
 
 def getSchemaRoute(dbId, tbId):
-  if not checkDBBelongsToUser(getUserID(), dbId):
+  if checkDBBelongsToUser(getUserID(), dbId) == 0:
     print('Database does not belong to you. Please choose another')
+    sys.exit(1)
+  if checkTBBelongsToUser(getUserID(), tbId) == 0:
+    print('Table does not belong to you/this database or does not exist. Please choose another')
     sys.exit(1)
 
   encryptedMasterKey = base64.b64decode(getMasterKey(dbId))
   masterKey = decryptWithPrivateKey(getPrivateKey(), encryptedMasterKey, getPassword())
-
   encryptedSchema = getSchema(tbId, dbId)
 
-  print(base64.b64encode(decryptMessage(encryptedSchema, getIV(), masterKey)))
+  print('\nSchema:\n',base64.b64encode(decryptMessage(encryptedSchema, getIV(), masterKey)).decode('utf-8'), '\n')
+
+def rwInsertRoute(dbId, tbId, data):
+  # 1. check tb belongs to user
+  # 2. validate data to schema
+  # 3. generate iv
+  # 4. generate rowId
+  # 5. encrypt data
+  # 6. check follows schema
+  # 7. insert
+  if checkDBBelongsToUser(getUserID(), dbId) == 0:
+    print('Database does not belong to you. Please choose another')
+    sys.exit(1)
+  if checkTBBelongsToUser(getUserID(), tbId) == 0:
+    print('Table does not belong to you/this database or does not exist. Please choose another')
+    sys.exit(1)
+
+  iv = generateIV()
+  rowId = generateUserId()
+
+  encryptedMasterKey = base64.b64decode(getMasterKey(dbId))
+  masterKey = decryptWithPrivateKey(getPrivateKey(), encryptedMasterKey, getPassword())
+
+  encryptedData = encryptMessage(data, iv, masterKey)
+
+  insertRow(rowId, tbId, encryptedData, iv)
+
+def rwDeleteRoute(dbId, tbId, rwId):
+  # 1. check row belongs to user
+  # 2. delete
+
+  if checkDBBelongsToUser(getUserID(), dbId) == 0:
+    print('Database does not belong to you. Please choose another')
+    sys.exit(1)
+  if checkTBBelongsToUser(getUserID(), tbId) == 0:
+    print('Table does not belong to you/this database or does not exist. Please choose another')
+    sys.exit(1)
+  if checkRowBelongsToUser(getUserID(), rwId) == 0:
+    print('Table does not belong to you/this database or does not exist. Please choose another')
+    sys.exit(1)
+
+  deleteRow(tbId, rwId)
+
+def selectRoute(dbId, tbId):
+  # 1. check tb belongs to id
+  # 2. get array of rows
+  # 3. loop and decrypt
+  # 4. get schema
+  # 5. display
+
+  if checkDBBelongsToUser(getUserID(), dbId) == 0:
+    print('Database does not belong to you. Please choose another')
+    sys.exit(1)
+  if checkTBBelongsToUser(getUserID(), tbId) == 0:
+    print('Table does not belong to you/this database or does not exist. Please choose another')
+    sys.exit(1)
+
+  privateKey = getPrivateKey()
+  password = getPassword()
+
+  encryptedMasterKey = base64.b64decode(getMasterKey(dbId))
+  masterKey = decryptWithPrivateKey(privateKey, encryptedMasterKey, password)
+
+  encryptedSchema = getSchema(tbId, dbId)
+  decryptedSchema = decryptMessage(encryptedSchema, getIV(), masterKey).decode('utf-8')
+
+  schemaAttributes = decryptedSchema.split(',')
+  encryptedRows = selectRows(tbId)
+  decryptedRows = []
+
+
+  encryptedTableName = getTableName(dbId, tbId)
+  decryptedTableName = decryptMessage(encryptedTableName, getIV(), masterKey).decode('utf-8')
+  print(f'\n{decryptedTableName}:\n')
+
+  for item in encryptedRows:
+    data = decryptMessage(item[0], item[1], masterKey).decode('utf-8').split(',')
+    decryptedRows.append(data)
+
+  print(tabulate(decryptedRows, headers=schemaAttributes))
+
+def listRowsRoute(dbId, tbId):
+  if checkDBBelongsToUser(getUserID(), dbId) == 0:
+    print('Database does not belong to you. Please choose another')
+    sys.exit(1)
+  if checkTBBelongsToUser(getUserID(), tbId) == 0:
+    print('Table does not belong to you/this database or does not exist. Please choose another')
+    sys.exit(1)
+
+  privateKey = getPrivateKey()
+  password = getPassword()
+
+  encryptedMasterKey = base64.b64decode(getMasterKey(dbId))
+  masterKey = decryptWithPrivateKey(privateKey, encryptedMasterKey, password)
+
+  encryptedSchema = getSchema(tbId, dbId)
+  decryptedSchema = decryptMessage(encryptedSchema, getIV(), masterKey).decode('utf-8')
+
+  schemaAttributes = decryptedSchema.split(',')
+  encryptedRows = listRows(tbId)
+  decryptedRows = []
+
+  schemaAttributes.insert(0, 'rowId')
+
+  encryptedTableName = getTableName(dbId, tbId)
+  decryptedTableName = decryptMessage(encryptedTableName, getIV(), masterKey).decode('utf-8')
+  print(f'\n{decryptedTableName}:\n')
+
+  for item in encryptedRows:
+    data = decryptMessage(item[0], item[1], masterKey).decode('utf-8')
+    decryptedRows.append([item[2], data])
+
+  print(tabulate(decryptedRows, headers=schemaAttributes))

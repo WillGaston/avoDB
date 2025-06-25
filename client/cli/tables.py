@@ -77,30 +77,29 @@ def rw():
 @click.option('--dbId', prompt=True, help="id of database")
 @click.option('--tbId', prompt=True, help="id of table")
 @click.option('--data', prompt=True, help="data to be inserted")
-def insert(dbId, tbId, data):
-  print('blah')
-  print(dbId)
-  print(tbId)
-  print(data)
+def insert(dbid, tbid, data):
+  rwInsertRoute(dbid, tbid, data)
 
 @click.command(help="--dbId <*dbId*> --tbId <*tbId*>")
 @click.option('--dbId', prompt=True, help="id of database")
 @click.option('--tbId', prompt=True, help="id of table")
-def select(dbId, tbId):
-  print('blah')
-  print(dbId)
-  print(tbId)
+def select(dbid, tbid):
+  selectRoute(dbid, tbid)
+
+@click.command(help="--dbId <*dbId*> --tbId <*tbId*>")
+@click.option('--dbId', prompt=True, help="id of database")
+@click.option('--tbId', prompt=True, help="id of table")
+def rwList(dbid, tbid):
+  listRowsRoute(dbid, tbid)
 
 @click.command(help="--dbId <*dbId*> --tbId <*tbId*> --rwId <*rwId*>")
 @click.option('--dbId', prompt=True, help="id of database")
 @click.option('--tbId', prompt=True, help="id of table")
 @click.option('--rwId', prompt=True, help="id of row to be deleted")
-def rwDelete(dbId, tbId, rwId):
-  print('blah')
-  print(dbId)
-  print(tbId)
-  print(rwId)
+def rwDelete(dbid, tbid, rwid):
+  rwDeleteRoute(dbid, tbid, rwid)
 
 rw.add_command(insert)
 rw.add_command(select)
+rw.add_command(rwList)
 rw.add_command(rwDelete)

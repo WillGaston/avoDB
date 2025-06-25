@@ -126,4 +126,4 @@ def decryptMessage(ciphertext, iv, masterKey):
   rawText = decryptor.update(base64.b64decode(ciphertext)) + decryptor.finalize()
   unpaddingObject = sym_padding.PKCS7(128).unpadder()
   unpaddedPK = unpaddingObject.update(rawText) + unpaddingObject.finalize()
-  return base64.b64decode(unpaddedPK)
+  return unpaddedPK
