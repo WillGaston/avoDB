@@ -1,5 +1,7 @@
 # avoDB
 A small, end-to-end encrypted database as a service (DBaaS) with a focus on security.
+- can create databases, tables, records
+- integrated end-to-end encrypted messaging between users
 ```
                      ____   ____  
   __ _ __   __ ___  |  _ \ | __ ) 
@@ -14,7 +16,14 @@ A small, end-to-end encrypted database as a service (DBaaS) with a focus on secu
 user commands:
 register       --username <*username*> --password <*password*>
 login          --username <*username*> --password <*password*>
-logout  
+userList
+logout
+
+message commands:
+initiateConvo  --userId <*userId*>
+viewConvos
+sendMsg        --message <*message*>
+viewMsgs
 
 database commands:
 dbCreate       --name <*name*>
@@ -30,6 +39,7 @@ tbDelete       --dbId <*dbId*> --tbId <*tbId*>
 data/row commands
 insert       --dbId <*dbId*> --tbId <*tbId*> --data <*data*>
 select       --dbId <*dbId*> --tbId <*tbId*>
+rwList       --dbId <*dbId*> --tbId <*tbId*>
 rwDelete     --dbId <*dbId*> --tbId <*tbId*> --rwId <*rwId*>
 
 ```
