@@ -1,5 +1,7 @@
 # avoDB
 A small, end-to-end encrypted database as a service (DBaaS) with a focus on security.
+- can create databases, tables, records
+- integrated end-to-end encrypted messaging between users
 ```
                      ____   ____  
   __ _ __   __ ___  |  _ \ | __ ) 
