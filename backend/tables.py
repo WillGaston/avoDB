@@ -80,7 +80,7 @@ def getSchema(tbId, dbId):
     sys.exit(1)
 
   return value[0]
-
+ 
 def getTableName(dbId, tbId):
   qry = "select encrypted_table_name from Tables where db_id = %s and table_id = %s"
   cursor, connection = cursorCreation()

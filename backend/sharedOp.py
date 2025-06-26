@@ -31,3 +31,13 @@ def getUserId(username):
   cursorRemoval(cursor, connection)
   # error checking
   return result[0]
+
+def getUsername(userId):
+  qry = "select username from UsersMeta where user_id = %s"
+  cursor, connection = cursorCreation()
+
+  cursor.execute(qry, [userId])
+  result = cursor.fetchone()
+  cursorRemoval(cursor, connection)
+  # error checking
+  return result[0]

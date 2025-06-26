@@ -92,3 +92,16 @@ def checkRowBelongsToUser(userId, rowId):
     return False
 
   return True
+
+def listUsers():
+  qry = "select username, user_id from UsersMeta;"
+  cursor, connection = cursorCreation()
+
+  cursor.execute(qry, [])
+  value = cursor.fetchall()
+  cursorRemoval(cursor, connection)
+  
+  if value is None:
+    return False
+
+  return value

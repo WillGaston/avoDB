@@ -1,5 +1,6 @@
 import click
 from client.cli.auth import *
+from client.cli.messages import *
 from client.cli.tables import *
 
 avoDB_banner = r"""
@@ -14,3 +15,4 @@ avoDB_CLI.add_command(auth)
 avoDB_CLI.add_command(db)
 avoDB_CLI.add_command(tb)
 avoDB_CLI.add_command(rw)
+avoDB_CLI.add_command(msg)

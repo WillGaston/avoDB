@@ -19,9 +19,14 @@ def register(username, password):
   registerFunc(username, password)
 
 @click.command(help="")
+def userList():
+  userListFunc()
+
+@click.command(help="")
 def logout():
   logoutFunc()
 
 auth.add_command(login)
 auth.add_command(register)
 auth.add_command(logout)
+auth.add_command(userList)

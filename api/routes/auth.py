@@ -1,5 +1,7 @@
 import datetime
 
+from tabulate import tabulate
+
 from backend.auth import *
 from backend.sharedOp import checkUsernameExits, getUserId
 from client.cryptography.encryption import *
@@ -79,3 +81,19 @@ def registerFunc(username, password):
 def logoutFunc():
   removeCredentials()
   print('Successfully logged out')
+
+def userListFunc():
+  users = listUsers()
+
+  print('\nUsers:\n')
+
+  formattedUsers = []
+  if len(users) == 0:
+    formattedUsers.append([user[0], user[1]])
+  else:
+    for user in users:
+      formattedUsers.append([user[0], user[1]])
+
+  print(tabulate(formattedUsers, headers=['username', 'userId']))
+
+  print('\n')

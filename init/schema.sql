@@ -33,3 +33,14 @@ create table if not exists Rows (
   iv                    text not null,
   created_at            timestamp not null default current_timestamp
 ); 
+
+create table if not exists Messages (
+  message_id              UUID not null primary key,
+  encrypted_message       text not null,
+  sender_id               UUID not null references UsersMeta(user_id),
+  receiver_id             UUID not null references UsersMeta(user_id),
+  sent_at                 timestamp not null default current_timestamp,
+  encrypted_sender_key    text not null,
+  encrypted_receiver_key  text not null,
+  iv                      text not null
+)
