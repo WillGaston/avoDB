@@ -10,7 +10,6 @@ from client.storage.sessionManagement import getConvoUserID, getPassword, getPri
 def initiateConvoRoute(userId):
   # 1. get user's public key
   # 2. add userid and public key to keyring
-  print('blah')
   publicKey = getReceiverPublicKey(userId)
   initiateConvo(userId, publicKey)
   print('Successfully initiated conversation')
@@ -21,21 +20,17 @@ def viewConvosRoute():
 
 def sendMsgRoute(message):
   senderId = getUserID()
-  recipientId = getConvoUserID()
-  recipientPublicKey = base64.b64decode(getRecipientPublicKey())
-  senderPublicKey = getPublicKey()
   
-  messageId = generateUserId()
   messageKey = generateMasterKey()
   iv = generateIV()
 
-  encryptedMessage = encryptMessage(message, iv, messageKey)
-  encryptedSenderKey = encryptWithPublicKey(messageKey, senderPublicKey)
+  encryptedMessage = encryptMessage(message, iv, messageKey, getPrivateKey())
+  encryptedSenderKey = encryptWithPublicKey(messageKey, getPublicKey())
   encryptedSenderKey = base64.b64encode(encryptedSenderKey).decode('utf-8')
-  encryptedRecipientKey = encryptWithPublicKey(messageKey, recipientPublicKey)
+  encryptedRecipientKey = encryptWithPublicKey(messageKey, base64.b64decode(getRecipientPublicKey()))
   encryptedRecipientKey = base64.b64encode(encryptedRecipientKey).decode('utf-8')
 
-  if sendMsg(messageId, encryptedMessage, senderId, recipientId, encryptedSenderKey, encryptedRecipientKey, iv):
+  if sendMsg(generateUserId(), encryptedMessage, senderId, getConvoUserID(), encryptedSenderKey, encryptedRecipientKey, iv):
     print('Message sent successfully')
 
 def viewMsgsRoute():
@@ -51,7 +46,7 @@ def viewMsgsRoute():
   for message in encryptedUserSentMessages:
     encryptedSenderKey = base64.b64decode(message[3])
     messageKey = decryptWithPrivateKey(getPrivateKey(), encryptedSenderKey, getPassword())
-    decryptedMessage = decryptMessage(message[0], message[2], messageKey).decode('utf-8')
+    decryptedMessage = decryptMessage(message[0], message[2], messageKey, getPublicKey()).decode('utf-8')
     sentAt = message[1]
 
     userSentMessages.append([decryptedMessage, sentAt])
@@ -63,7 +58,7 @@ def viewMsgsRoute():
   for message in encryptedUserReceivedMessages:
     encryptedSenderKey = base64.b64decode(message[3])
     messageKey = decryptWithPrivateKey(getPrivateKey(), encryptedSenderKey, getPassword())
-    decryptedMessage = decryptMessage(message[0], message[2], messageKey).decode('utf-8')
+    decryptedMessage = decryptMessage(message[0], message[2], messageKey, base64.b64decode(getRecipientPublicKey())).decode('utf-8')
     sentAt = message[1]
 
     userReceivedMessages.append([decryptedMessage, sentAt])

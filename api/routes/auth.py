@@ -71,7 +71,11 @@ def registerFunc(username, password):
   successful = addUserToDB(userId, username, hashedPassword, salt, iv, encodedEncryptedPrivateKey, encodedPublicKey, datetime.datetime.now())
   if successful:
     print('Registration Successful')
-    setCredentials(userId, privateSerialisedKey, publicSerialisedKey, password, iv)
+    try:
+      setCredentials(userId, privateSerialisedKey, publicSerialisedKey, password, iv)
+    except:
+      print('failed to set credentials')
+      sys.exit(1)
   else:
     print('Failed To Register')
     
