@@ -1,5 +1,3 @@
-import psycopg2
-import os
 import sys
 
 from backend.dbInit import cursorCreation, cursorRemoval

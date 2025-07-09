@@ -76,7 +76,7 @@ def rw():
 @click.command(help="--dbId <*dbId*> --tbId <*tbId*> --data <*data*>")
 @click.option('--dbId', prompt=True, help="id of database")
 @click.option('--tbId', prompt=True, help="id of table")
-@click.option('--data', prompt=True, help="data to be inserted")
+@click.option('--data', prompt=True, help="data to be inserted - comma separated fields")
 def insert(dbid, tbid, data):
   rwInsertRoute(dbid, tbid, data)
 
