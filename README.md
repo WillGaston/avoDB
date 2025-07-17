@@ -62,7 +62,7 @@ Please find here my [short report document](https://github.com/WillGaston/avoDB/
 
 ## 5 Pillars of Information Assurance
 
-Below is a short exerpt from my Project Deliverables and Short Report which highlight the methods I adhered to the 5 pillars of information assurance. This is the primary security concept I explored and my project is a real-world application of these principles.
+Below is a short exerpt from my Project Deliverables and Short Report which highlight the methods I used to adhere to the 5 pillars of information assurance. This is the primary security concept I explored, and my project is a real-world application of these principles.
 
 1. Confidentiality
    All database records are encrypted client-side using AES-GCM (Advanced Encryption Algorithm with Galois/Counter Mode), ensuring end-to-end protection of database data. This guarantees the information input by the user has strong confidentiality both in transit and at rest on the server, preventing unauthorised access of the data even in the event the database is compromised.
