@@ -43,6 +43,50 @@ rwList       --dbId <*dbId*> --tbId <*tbId*>
 rwDelete     --dbId <*dbId*> --tbId <*tbId*> --rwId <*rwId*>
 
 ```
+## Setting Up
+
+The local database server is setup through docker and the docker-compose.yml file.
+
+You need to specify three environment variables for
+- POSTGRES_USER
+- POSTGRES_PASSWORD
+- POSTGRES_DB
+
+Once these are set you need to compose and run the docker instance.
+
+For example, on Windows:
+- run docker desktop
+- open the terminal and traverse to the folder with the docker-compose.yml file
+- run the command `docker-compose up`
+
+Useful docker /server related commands are:
+
+```bash
+# run the docker container with the database
+docker-compose up
+
+# shutdown the docker container
+docker-compose down
+
+# to interact with database via psql
+# export var to docker shell (i.e. subproccesses)
+export POSTGRES_USER=... whatever your username is
+# open psql interactive mode in docker container
+docker exec -it avodb-db-1 psql -U "$POSTGRES_USER" -d avoDB
+```
+
+NOTE: avoDB is a proof of concept so you docker instance is isolated to your computer.
+
+Now you need to install the packages via the setup.py script, depending on if you have attempted to install previously you can follow these steps:
+```bash
+pip uninstall avoDB
+rm -rf build/ avoDB.egg-info/
+pip install -e .
+```
+
+From here you can either:
+- directly run `python3 main.py` from the root
+- run via cli, simply input `avodb` into the terminal
 
 ## Project Deliverables
 
